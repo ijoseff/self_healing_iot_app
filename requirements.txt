@@ -3,4 +3,4 @@ azure-iot-device
 matplotlib
 pandas
 plotly
-openai
+openai==0.28
