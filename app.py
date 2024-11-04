@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import json
 from azure.iot.hub import IoTHubRegistryManager
+import random
+
 
 # Replace with your Azure IoT Hub connection string
 IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
