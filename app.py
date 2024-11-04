@@ -3,6 +3,8 @@ import pandas as pd
 import json
 from azure.iot.hub import IoTHubRegistryManager
 import random
+import time
+
 
 
 # Replace with your Azure IoT Hub connection string
