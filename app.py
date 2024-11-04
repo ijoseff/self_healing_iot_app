@@ -5,7 +5,6 @@ import random
 import time
 import pandas as pd
 import plotly.graph_objects as go
-import openai  # Import OpenAI for GPT API
 import os
 
 # Replace with your Azure IoT Hub connection string
