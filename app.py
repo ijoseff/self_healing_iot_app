@@ -74,16 +74,25 @@ def plot_data():
 
         st.plotly_chart(fig)
 
-# Function to get GPT insights based on averages
+# Function to get GPT insights
 def get_gpt_insights(avg_heart_rate, avg_steps):
-    prompt = f"Based on an average heart rate of {avg_heart_rate:.2f} bpm and {avg_steps:.2f} steps per day, provide insights, recommendations, and motivation for maintaining or improving these health metrics."
-    
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}]
+    prompt = f"""
+    Based on an average heart rate of {avg_heart_rate:.2f} bpm and average daily steps of {avg_steps:.2f}, 
+    provide:
+    1. A brief insight about the user's overall health.
+    2. A recommendation to improve their health metrics.
+    3. A motivational message for staying active.
+    """
+
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=100,
+        temperature=0.7,
     )
-    
-    return response['choices'][0]['message']['content']
+
+    insights = response.choices[0].text.strip()
+    return insights
 
 st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide")
 st.title("🏥 Real-Time Health Monitoring Dashboard")
