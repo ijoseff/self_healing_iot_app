@@ -5,6 +5,10 @@ import random
 import time
 import pandas as pd
 import plotly.graph_objects as go
+import openai  # Import OpenAI for GPT API
+
+# Set your OpenAI API key
+openai.api_key = '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'
 
 # Replace with your Azure IoT Hub connection string
 IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
@@ -70,6 +74,17 @@ def plot_data():
 
         st.plotly_chart(fig)
 
+# Function to get GPT insights based on averages
+def get_gpt_insights(avg_heart_rate, avg_steps):
+    prompt = f"Based on an average heart rate of {avg_heart_rate:.2f} bpm and {avg_steps:.2f} steps per day, provide insights, recommendations, and motivation for maintaining or improving these health metrics."
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    return response['choices'][0]['message']['content']
+
 st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide")
 st.title("🏥 Real-Time Health Monitoring Dashboard")
 st.sidebar.header("Settings")
@@ -109,6 +124,11 @@ if not st.session_state.data_history.empty:
     avg_steps = st.session_state.data_history['steps'].mean()
     st.write(f"**Average Heart Rate:** {avg_heart_rate:.2f} bpm")
     st.write(f"**Average Steps:** {avg_steps:.2f} steps")
+
+    # Get insights from GPT
+    gpt_insights = get_gpt_insights(avg_heart_rate, avg_steps)
+    st.subheader("Insights & Recommendations")
+    st.write(gpt_insights)
 
 # Option to clear history
 if st.button("Clear History"):
