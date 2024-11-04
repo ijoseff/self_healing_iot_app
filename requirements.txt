@@ -1,3 +1,4 @@
 streamlit
-azure-iot-hub
 azure-iot-device
+matplotlib
+pandas
