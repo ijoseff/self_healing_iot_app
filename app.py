@@ -1,8 +1,6 @@
 import streamlit as st
-import pandas as pd
 import json
-from azure.iot.hub import IoTHubRegistryManager
-from azure.iot.hub import IoTHubDeviceClient
+from azure.iot.device import IoTHubDeviceClient
 import random
 import time
 
