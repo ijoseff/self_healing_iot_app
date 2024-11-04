@@ -9,7 +9,7 @@ import openai  # Import OpenAI for GPT API
 import os
 
 # Retrieve the OpenAI API key from environment variables
-openai.api_key = "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"
+openai.api_key = "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"
 
 # Replace with your Azure IoT Hub connection string
 IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
