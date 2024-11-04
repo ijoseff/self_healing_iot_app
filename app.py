@@ -4,6 +4,7 @@ from azure.iot.device import IoTHubDeviceClient
 import random
 import time
 import pandas as pd
+import plotly.graph_objects as go
 
 # Replace with your Azure IoT Hub connection string
 IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
@@ -32,10 +33,42 @@ def get_device_data():
 
     return payload
 
-# Function to plot the data
+# Function to plot the data with dual-axis
 def plot_data():
     if not st.session_state.data_history.empty:
-        st.line_chart(st.session_state.data_history.set_index('timestamp'))
+        fig = go.Figure()
+
+        # Add heart rate trace
+        fig.add_trace(go.Scatter(
+            x=st.session_state.data_history['timestamp'],
+            y=st.session_state.data_history['heart_rate'],
+            name='Heart Rate (bpm)',
+            yaxis='y1',
+            mode='lines+markers',
+            marker=dict(color='blue')
+        ))
+
+        # Add steps trace
+        fig.add_trace(go.Scatter(
+            x=st.session_state.data_history['timestamp'],
+            y=st.session_state.data_history['steps'],
+            name='Steps',
+            yaxis='y2',
+            mode='lines+markers',
+            marker=dict(color='orange')
+        ))
+
+        # Update layout for dual axes
+        fig.update_layout(
+            title='Health Monitoring Data',
+            xaxis=dict(title='Timestamp'),
+            yaxis=dict(title='Heart Rate (bpm)', side='left', showgrid=False),
+            yaxis2=dict(title='Steps', side='right', overlaying='y', showgrid=False),
+            legend=dict(x=0.1, y=0.9),
+            template='plotly_white'
+        )
+
+        st.plotly_chart(fig)
 
 st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide")
 st.title("Real-Time Health Monitoring Dashboard")
