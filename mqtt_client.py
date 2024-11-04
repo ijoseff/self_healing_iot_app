@@ -1,37 +1,27 @@
-
 import paho.mqtt.client as mqtt
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected to MQTT Broker with result code " + str(rc))
-    client.subscribe("device/status")
+    if rc == 0:
+        print("Connected to MQTT Broker successfully!")
+        client.subscribe("device/status")
+    else:
+        print("Failed to connect, return code %d\n", rc)
 
 def on_message(client, userdata, msg):
-    print("Received message: " + msg.topic + " -> " + msg.payload.decode())
+    print(f"Received message on {msg.topic}: {msg.payload.decode()}")
 
 def create_mqtt_client():
-    client = mqtt.Client(transport="websockets")  # Use WebSockets transport
+    # Create an MQTT client instance using WebSocket transport
+    client = mqtt.Client(transport="websockets")
+    
+    # Attach event handlers
     client.on_connect = on_connect
     client.on_message = on_message
-    client.tls_set()  # Enable SSL/TLS
-    client.connect("simply-automate.azure-devices.net", 443, 60)  # Use port 443 for WebSocket
-    return client
+    
+    # Set up TLS/SSL
+    client.tls_set()  # Ensures secure WebSocket connection
 
-
-
-
-
-import paho.mqtt.client as mqtt
-
-def on_connect(client, userdata, flags, rc):
-    print("Connected to MQTT Broker with result code " + str(rc))
-    client.subscribe("device/status")
-
-def on_message(client, userdata, msg):
-    print("Received message: " + msg.topic + " -> " + msg.payload.decode())
-
-def create_mqtt_client():
-    client = mqtt.Client()
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.connect("simply-automate.azure-devices.net", 1883, 60)
+    # Attempt to connect to Azure IoT Hub using WebSockets on port 443
+    client.connect("simply-automate.azure-devices.net", port=443, keepalive=60)
+    
     return client
