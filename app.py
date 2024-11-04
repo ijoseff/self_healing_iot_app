@@ -71,7 +71,7 @@ def plot_data():
         st.plotly_chart(fig)
 
 st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide")
-st.title("Real-Time Health Monitoring Dashboard")
+st.title("🏥 Real-Time Health Monitoring Dashboard")
 st.sidebar.header("Settings")
 refresh_interval = st.sidebar.slider("Data Refresh Interval (seconds)", min_value=1, max_value=10, value=5)
 
