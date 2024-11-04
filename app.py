@@ -118,4 +118,4 @@ if st.button("Clear History"):
 
 # Footer
 st.markdown("---")
-st.markdown("This application was developed by **Joseff Tan**.🤗")
+st.markdown("This application was developed by **Joseff Tan**. 🤗")
