@@ -2,3 +2,4 @@ streamlit
 azure-iot-device
 matplotlib
 pandas
+plotly
