@@ -1,18 +1,23 @@
+import streamlit as st
 from mqtt_client import create_mqtt_client
 from gpt_response import get_gpt_solution
 
+st.title("Self-Healing IoT Dashboard")
+
+# Function to simulate device check and error handling
 def check_device_status():
-    # Simulate receiving an error status from a device
+    # Simulate an error for demonstration
     issue = "Device temperature exceeds normal range"
-    print("Detected issue:", issue)
+    st.write(f"Detected issue: {issue}")
 
-    # Attempt self-healing
+    # Use GPT to generate a self-healing solution
     solution = get_gpt_solution(issue)
-    print("Suggested Solution:", solution)
+    st.write(f"Suggested Solution: {solution}")
 
-if __name__ == "__main__":
-    mqtt_client = create_mqtt_client()
-    mqtt_client.loop_start()  # Start MQTT loop
+# Start MQTT client for real-time data (optional)
+mqtt_client = create_mqtt_client()
+mqtt_client.loop_start()
 
-    # Run periodic checks (simplified for demo)
+# Trigger self-healing check on button click
+if st.button("Check Device Status"):
     check_device_status()
