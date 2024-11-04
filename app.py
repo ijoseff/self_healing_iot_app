@@ -77,7 +77,6 @@ refresh_interval = st.sidebar.slider("Data Refresh Interval (seconds)", min_valu
 
 # Show that the data is pulling from the IoT cloud
 st.markdown("### Data is being retrieved from Azure IoT Hub...")
-st.markdown("#### Created by Joseff Tan")
 
 # Simulated data display
 if st.button('Get Latest Data'):
