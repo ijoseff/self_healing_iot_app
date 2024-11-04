@@ -42,25 +42,30 @@ st.title("Real-Time Health Monitoring Dashboard")
 st.sidebar.header("Settings")
 refresh_interval = st.sidebar.slider("Data Refresh Interval (seconds)", min_value=1, max_value=10, value=5)
 
+# Show that the data is pulling from the IoT cloud
+st.markdown("### Data is being retrieved from Azure IoT Hub...")
+st.markdown("#### Created by Joseff Tan")
+
 # Simulated data display
 if st.button('Get Latest Data'):
-    data = get_device_data()
-    new_data = {
-        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['timestamp'])),
-        "heart_rate": data['heart_rate'],
-        "steps": data['steps']
-    }
-    
-    # Convert new_data to DataFrame
-    new_data_df = pd.DataFrame([new_data])
-    
-    # Use pd.concat to append the new data
-    st.session_state.data_history = pd.concat([st.session_state.data_history, new_data_df], ignore_index=True)
+    with st.spinner('Fetching data from IoT Hub...'):
+        data = get_device_data()
+        new_data = {
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['timestamp'])),
+            "heart_rate": data['heart_rate'],
+            "steps": data['steps']
+        }
+        
+        # Convert new_data to DataFrame
+        new_data_df = pd.DataFrame([new_data])
+        
+        # Use pd.concat to append the new data
+        st.session_state.data_history = pd.concat([st.session_state.data_history, new_data_df], ignore_index=True)
 
-    st.success("Data retrieved successfully!")
-    st.write(f"**Heart Rate:** {data['heart_rate']} bpm")
-    st.write(f"**Steps:** {data['steps']} steps")
-    st.write(f"**Timestamp:** {new_data['timestamp']}")
+        st.success("Data retrieved successfully!")
+        st.write(f"**Heart Rate:** {data['heart_rate']} bpm")
+        st.write(f"**Steps:** {data['steps']} steps")
+        st.write(f"**Timestamp:** {new_data['timestamp']}")
 
 # Plot historical data
 st.subheader("Historical Data")
@@ -77,3 +82,7 @@ if not st.session_state.data_history.empty:
 if st.button("Clear History"):
     st.session_state.data_history = pd.DataFrame(columns=["timestamp", "heart_rate", "steps"])
     st.success("Data history cleared!")
+
+# Footer
+st.markdown("---")
+st.markdown("This application was developed by **Joseff Tan**.")
