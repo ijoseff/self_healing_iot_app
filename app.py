@@ -8,9 +8,6 @@ import plotly.graph_objects as go
 import openai  # Import OpenAI for GPT API
 import os
 
-# Retrieve the OpenAI API key from environment variables
-openai.api_key = "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"
-
 # Replace with your Azure IoT Hub connection string
 IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
 
@@ -130,11 +127,7 @@ if not st.session_state.data_history.empty:
     avg_steps = st.session_state.data_history['steps'].mean()
     st.write(f"**Average Heart Rate:** {avg_heart_rate:.2f} bpm")
     st.write(f"**Average Steps:** {avg_steps:.2f} steps")
-
-    # Get insights from GPT
-    gpt_insights = get_gpt_insights(avg_heart_rate, avg_steps)
-    st.subheader("Insights & Recommendations")
-    st.write(gpt_insights)
+    
 
 # Option to clear history
 if st.button("Clear History"):
