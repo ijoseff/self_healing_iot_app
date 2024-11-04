@@ -1,2 +1,3 @@
 streamlit
+azure-iot-hub
 azure-iot-device
