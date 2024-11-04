@@ -4,7 +4,6 @@ from azure.iot.device import IoTHubDeviceClient
 import random
 import time
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Replace with your Azure IoT Hub connection string
 IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
@@ -14,7 +13,6 @@ if 'data_history' not in st.session_state:
     st.session_state.data_history = pd.DataFrame(columns=["timestamp", "heart_rate", "steps"])
 
 def get_device_data():
-    # Logic to retrieve data from IoT Hub
     heart_rate = random.randint(60, 100)
     steps = random.randint(0, 10000)
 
@@ -47,13 +45,17 @@ refresh_interval = st.sidebar.slider("Data Refresh Interval (seconds)", min_valu
 # Simulated data display
 if st.button('Get Latest Data'):
     data = get_device_data()
-    # Append new data to history
     new_data = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['timestamp'])),
         "heart_rate": data['heart_rate'],
         "steps": data['steps']
     }
-    st.session_state.data_history = st.session_state.data_history.append(new_data, ignore_index=True)
+    
+    # Convert new_data to DataFrame
+    new_data_df = pd.DataFrame([new_data])
+    
+    # Use pd.concat to append the new data
+    st.session_state.data_history = pd.concat([st.session_state.data_history, new_data_df], ignore_index=True)
 
     st.success("Data retrieved successfully!")
     st.write(f"**Heart Rate:** {data['heart_rate']} bpm")
