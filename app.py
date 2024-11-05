@@ -5,9 +5,12 @@ import random
 import time
 import pandas as pd
 import plotly.graph_objects as go
-import os
 
-# Replace with your Azure IoT Hub connection string
+# Define alert thresholds
+HEART_RATE_THRESHOLD = 100
+STEPS_THRESHOLD = 1000
+
+# Azure IoT Hub connection string
 IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
 
 # Global DataFrame to store telemetry data
@@ -15,7 +18,7 @@ if 'data_history' not in st.session_state:
     st.session_state.data_history = pd.DataFrame(columns=["timestamp", "heart_rate", "steps"])
 
 def get_device_data():
-    heart_rate = random.randint(60, 100)
+    heart_rate = random.randint(60, 120)  # Set a wider range to simulate alerts
     steps = random.randint(0, 10000)
 
     # Create a client instance
@@ -32,70 +35,19 @@ def get_device_data():
     client.send_message(json.dumps(payload))
     client.shutdown()  # Close the connection
 
+    # Check for alert conditions
+    if heart_rate > HEART_RATE_THRESHOLD:
+        st.error(f"⚠️ Alert: Heart rate is unusually high at {heart_rate} bpm!")
+    if steps < STEPS_THRESHOLD:
+        st.warning(f"⚠️ Alert: Low steps detected today: {steps} steps.")
+
     return payload
 
-# Function to plot the data with dual-axis
-def plot_data():
-    if not st.session_state.data_history.empty:
-        fig = go.Figure()
-
-        # Add heart rate trace
-        fig.add_trace(go.Scatter(
-            x=st.session_state.data_history['timestamp'],
-            y=st.session_state.data_history['heart_rate'],
-            name='Heart Rate (bpm)',
-            yaxis='y1',
-            mode='lines+markers',
-            marker=dict(color='blue')
-        ))
-
-        # Add steps trace
-        fig.add_trace(go.Scatter(
-            x=st.session_state.data_history['timestamp'],
-            y=st.session_state.data_history['steps'],
-            name='Steps',
-            yaxis='y2',
-            mode='lines+markers',
-            marker=dict(color='orange')
-        ))
-
-        # Update layout for dual axes
-        fig.update_layout(
-            title='Health Monitoring Data',
-            xaxis=dict(title='Timestamp'),
-            yaxis=dict(title='Heart Rate (bpm)', side='left', showgrid=False),
-            yaxis2=dict(title='Steps', side='right', overlaying='y', showgrid=False),
-            legend=dict(x=0.1, y=0.9),
-            template='plotly_white'
-        )
-
-        st.plotly_chart(fig)
-
-def get_gpt_insights(avg_heart_rate, avg_steps):
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant providing health insights based on user data."},
-        {"role": "user", "content": f"Based on an average heart rate of {avg_heart_rate:.2f} bpm and average daily steps of {avg_steps:.2f}, provide a brief insight on health, a recommendation for improvement, and a motivational message."}
-    ]
-
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # or "gpt-4" if available
-        messages=messages,
-        max_tokens=100,
-        temperature=0.7,
-    )
-
-    insights = response['choices'][0]['message']['content'].strip()
-    return insights
-
+# Streamlit page configuration
 st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide")
 st.title("🏥 Real-Time Health Monitoring Dashboard")
-st.sidebar.header("Settings")
-refresh_interval = st.sidebar.slider("Data Refresh Interval (seconds)", min_value=1, max_value=10, value=5)
 
-# Show that the data is pulling from the IoT cloud
-st.markdown("### Data is being retrieved from Azure IoT Hub...")
-
-# Simulated data display
+# Button to retrieve latest data
 if st.button('Get Latest Data'):
     with st.spinner('Fetching data from IoT Hub...'):
         data = get_device_data()
@@ -105,10 +57,8 @@ if st.button('Get Latest Data'):
             "steps": data['steps']
         }
         
-        # Convert new_data to DataFrame
+        # Convert new_data to DataFrame and append to session history
         new_data_df = pd.DataFrame([new_data])
-        
-        # Use pd.concat to append the new data
         st.session_state.data_history = pd.concat([st.session_state.data_history, new_data_df], ignore_index=True)
 
         st.success("Data retrieved successfully!")
@@ -118,21 +68,15 @@ if st.button('Get Latest Data'):
 
 # Plot historical data
 st.subheader("Historical Data")
-plot_data()
+plot_data()  # Existing function to plot data
 
-# Add additional statistics
+# Additional metrics and insights
 if not st.session_state.data_history.empty:
     avg_heart_rate = st.session_state.data_history['heart_rate'].mean()
     avg_steps = st.session_state.data_history['steps'].mean()
     st.write(f"**Average Heart Rate:** {avg_heart_rate:.2f} bpm")
     st.write(f"**Average Steps:** {avg_steps:.2f} steps")
     
-
-# Option to clear history
-if st.button("Clear History"):
-    st.session_state.data_history = pd.DataFrame(columns=["timestamp", "heart_rate", "steps"])
-    st.success("Data history cleared!")
-
-# Footer
-st.markdown("---")
-st.markdown("This application was developed by **Joseff Tan**. 🤗")
+    # Optionally, add more insights with GPT
+    # insights = get_gpt_insights(avg_heart_rate, avg_steps)
+    # st.info(insights)
