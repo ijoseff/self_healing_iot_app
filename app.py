@@ -85,10 +85,6 @@ def plot_data():
 st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide", initial_sidebar_state="collapsed")
 st.title("🏥 Real-Time Health Monitoring Dashboard")
 
-# Divider for Azure IoT Hub source notification
-st.markdown("---")
-st.write("🔗 **Data Source**: Pulling data from Azure IoT Hub")
-
 # Divider for Live Data Update section
 st.markdown("---")
 st.subheader("🔄 Live Data Update")
@@ -132,5 +128,6 @@ if not st.session_state.data_history.empty:
     progress = min(100, int((avg_steps / STEPS_THRESHOLD) * 100))
     st.progress(progress)
 
+    st.write("🔗 **Data Source**: Pulling data from Azure IoT Hub")
     st.caption("Note: Health data is simulated for testing purposes.")
     st.caption("Developed by **Joseff Tan**. 🤗")
