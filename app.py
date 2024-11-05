@@ -133,4 +133,4 @@ if not st.session_state.data_history.empty:
     st.progress(progress)
 
     st.caption("Note: Health data is simulated for testing purposes.")
-    st.caption("Developed by **Joseff Tan**". 🤗)
+    st.caption("Developed by **Joseff Tan**. 🤗")
