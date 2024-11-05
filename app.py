@@ -43,6 +43,43 @@ def get_device_data():
 
     return payload
 
+# Function to plot the data with dual-axis
+def plot_data():
+    if not st.session_state.data_history.empty:
+        fig = go.Figure()
+
+        # Add heart rate trace
+        fig.add_trace(go.Scatter(
+            x=st.session_state.data_history['timestamp'],
+            y=st.session_state.data_history['heart_rate'],
+            name='Heart Rate (bpm)',
+            yaxis='y1',
+            mode='lines+markers',
+            marker=dict(color='blue')
+        ))
+
+        # Add steps trace
+        fig.add_trace(go.Scatter(
+            x=st.session_state.data_history['timestamp'],
+            y=st.session_state.data_history['steps'],
+            name='Steps',
+            yaxis='y2',
+            mode='lines+markers',
+            marker=dict(color='orange')
+        ))
+
+        # Update layout for dual axes
+        fig.update_layout(
+            title='Health Monitoring Data',
+            xaxis=dict(title='Timestamp'),
+            yaxis=dict(title='Heart Rate (bpm)', side='left', showgrid=False),
+            yaxis2=dict(title='Steps', side='right', overlaying='y', showgrid=False),
+            legend=dict(x=0.1, y=0.9),
+            template='plotly_white'
+        )
+
+        st.plotly_chart(fig)
+
 # Streamlit page configuration
 st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide")
 st.title("🏥 Real-Time Health Monitoring Dashboard")
@@ -68,7 +105,7 @@ if st.button('Get Latest Data'):
 
 # Plot historical data
 st.subheader("Historical Data")
-plot_data()  # Existing function to plot data
+plot_data()  # Calls the plot_data function defined above
 
 # Additional metrics and insights
 if not st.session_state.data_history.empty:
