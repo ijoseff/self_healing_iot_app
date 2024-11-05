@@ -17,6 +17,7 @@ IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId
 if 'data_history' not in st.session_state:
     st.session_state.data_history = pd.DataFrame(columns=["timestamp", "heart_rate", "steps"])
 
+# Function to retrieve and send simulated device data
 def get_device_data():
     heart_rate = random.randint(60, 120)  # Set a wider range to simulate alerts
     steps = random.randint(0, 10000)
@@ -55,7 +56,7 @@ def plot_data():
             name='Heart Rate (bpm)',
             yaxis='y1',
             mode='lines+markers',
-            marker=dict(color='blue')
+            marker=dict(color='#1f77b4')
         ))
 
         # Add steps trace
@@ -65,12 +66,12 @@ def plot_data():
             name='Steps',
             yaxis='y2',
             mode='lines+markers',
-            marker=dict(color='orange')
+            marker=dict(color='#ff7f0e')
         ))
 
         # Update layout for dual axes
         fig.update_layout(
-            title='Health Monitoring Data',
+            title='📈 Health Monitoring Data',
             xaxis=dict(title='Timestamp'),
             yaxis=dict(title='Heart Rate (bpm)', side='left', showgrid=False),
             yaxis2=dict(title='Steps', side='right', overlaying='y', showgrid=False),
@@ -81,39 +82,49 @@ def plot_data():
         st.plotly_chart(fig)
 
 # Streamlit page configuration
-st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide")
+st.set_page_config(page_title="Health Monitoring Dashboard", layout="wide", initial_sidebar_state="collapsed")
 st.title("🏥 Real-Time Health Monitoring Dashboard")
 
-# Button to retrieve latest data
-if st.button('Get Latest Data'):
-    with st.spinner('Fetching data from IoT Hub...'):
-        data = get_device_data()
-        new_data = {
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['timestamp'])),
-            "heart_rate": data['heart_rate'],
-            "steps": data['steps']
-        }
-        
-        # Convert new_data to DataFrame and append to session history
-        new_data_df = pd.DataFrame([new_data])
-        st.session_state.data_history = pd.concat([st.session_state.data_history, new_data_df], ignore_index=True)
+# Create a container for live data updates
+with st.container():
+    st.subheader("🔄 Live Data Update")
 
-        st.success("Data retrieved successfully!")
-        st.write(f"**Heart Rate:** {data['heart_rate']} bpm")
-        st.write(f"**Steps:** {data['steps']} steps")
-        st.write(f"**Timestamp:** {new_data['timestamp']}")
+    # Button to retrieve latest data
+    if st.button('Get Latest Data'):
+        with st.spinner('Fetching data from IoT Hub...'):
+            data = get_device_data()
+            new_data = {
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['timestamp'])),
+                "heart_rate": data['heart_rate'],
+                "steps": data['steps']
+            }
+            
+            # Convert new_data to DataFrame and append to session history
+            new_data_df = pd.DataFrame([new_data])
+            st.session_state.data_history = pd.concat([st.session_state.data_history, new_data_df], ignore_index=True)
+
+            st.success("Data retrieved successfully!")
+            st.metric(label="Heart Rate", value=f"{data['heart_rate']} bpm")
+            st.metric(label="Steps", value=f"{data['steps']} steps")
+            st.write(f"**Timestamp:** {new_data['timestamp']}")
 
 # Plot historical data
-st.subheader("Historical Data")
+st.subheader("📊 Historical Data")
 plot_data()  # Calls the plot_data function defined above
 
 # Additional metrics and insights
-if not st.session_state.data_history.empty:
-    avg_heart_rate = st.session_state.data_history['heart_rate'].mean()
-    avg_steps = st.session_state.data_history['steps'].mean()
-    st.write(f"**Average Heart Rate:** {avg_heart_rate:.2f} bpm")
-    st.write(f"**Average Steps:** {avg_steps:.2f} steps")
-    
-    # Optionally, add more insights with GPT
-    # insights = get_gpt_insights(avg_heart_rate, avg_steps)
-    # st.info(insights)
+with st.container():
+    st.subheader("📈 Key Insights")
+    if not st.session_state.data_history.empty:
+        avg_heart_rate = st.session_state.data_history['heart_rate'].mean()
+        avg_steps = st.session_state.data_history['steps'].mean()
+        
+        col1, col2 = st.columns(2)
+        col1.metric(label="Average Heart Rate", value=f"{avg_heart_rate:.2f} bpm")
+        col2.metric(label="Average Steps", value=f"{avg_steps:.2f} steps")
+        
+        # Display progress towards daily step goal
+        progress = min(100, int((avg_steps / STEPS_THRESHOLD) * 100))
+        st.progress(progress)
+
+        st.caption("Note: Health data is simulated for testing purposes.")
