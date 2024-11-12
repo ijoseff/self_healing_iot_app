@@ -11,7 +11,7 @@ HEART_RATE_THRESHOLD = 100
 STEPS_THRESHOLD = 1000
 
 # Azure IoT Hub connection string
-IOT_HUB_CONNECTION_STRING = "HostName=simply-automate.azure-devices.net;DeviceId=simulated-device;SharedAccessKey=8gX1+FD9a0nOkXlinPZq1JvHYTEqmZqHpMvvMOUS6YU="
+IOT_HUB_CONNECTION_STRING = "HostName=simply-auto.azure-devices.net;DeviceId=test-self-healing;SharedAccessKey=oIBEIGylMTBPLv+R9ZqIAZVDRLmL2Twr6bdqEGOgCKA="
 
 # Global DataFrame to store telemetry data
 if 'data_history' not in st.session_state:
