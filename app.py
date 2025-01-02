@@ -1,6 +1,6 @@
 import streamlit as st
 import json
-from azure.iot.device import IoTHubDeviceClient
+# from azure.iot.device import IoTHubDeviceClient
 import random
 import time
 import pandas as pd
@@ -10,8 +10,8 @@ import plotly.graph_objects as go
 HEART_RATE_THRESHOLD = 100
 STEPS_THRESHOLD = 1000
 
-# Azure IoT Hub connection string
-IOT_HUB_CONNECTION_STRING = "HostName=simply-auto.azure-devices.net;DeviceId=test-self-healing;SharedAccessKey=oIBEIGylMTBPLv+R9ZqIAZVDRLmL2Twr6bdqEGOgCKA="
+# # Azure IoT Hub connection string
+# IOT_HUB_CONNECTION_STRING = "HostName=simply-auto.azure-devices.net;DeviceId=test-self-healing;SharedAccessKey=oIBEIGylMTBPLv+R9ZqIAZVDRLmL2Twr6bdqEGOgCKA="
 
 # Global DataFrame to store telemetry data
 if 'data_history' not in st.session_state:
@@ -22,9 +22,6 @@ def get_device_data():
     heart_rate = random.randint(60, 120)  # Set a wider range to simulate alerts
     steps = random.randint(0, 10000)
 
-    # Create a client instance
-    client = IoTHubDeviceClient.create_from_connection_string(IOT_HUB_CONNECTION_STRING)
-
     # Create a JSON payload
     payload = {
         "heart_rate": heart_rate,
@@ -32,9 +29,10 @@ def get_device_data():
         "timestamp": time.time()
     }
 
-    # Send the telemetry data to the IoT Hub
-    client.send_message(json.dumps(payload))
-    client.shutdown()  # Close the connection
+    # # Send the telemetry data to the IoT Hub
+    # client = IoTHubDeviceClient.create_from_connection_string(IOT_HUB_CONNECTION_STRING)
+    # client.send_message(json.dumps(payload))
+    # client.shutdown()  # Close the connection
 
     # Check for alert conditions
     if heart_rate > HEART_RATE_THRESHOLD:
@@ -91,7 +89,7 @@ st.subheader("🔄 Live Data Update")
 
 # Button to retrieve latest data
 if st.button('Get Latest Data'):
-    with st.spinner('Fetching data from Azure IoT Hub...'):
+    with st.spinner('Fetching simulated data...'):
         data = get_device_data()
         new_data = {
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['timestamp'])),
@@ -128,6 +126,6 @@ if not st.session_state.data_history.empty:
     progress = min(100, int((avg_steps / STEPS_THRESHOLD) * 100))
     st.progress(progress)
 
-    st.write("🔗 **Data Source**: Pulling data from Azure IoT Hub")
+    st.write("🔗 **Data Source**: Simulated data")
     st.caption("Note: Health data is simulated for testing purposes.")
     st.caption("Developed by **Joseff Tan**. 🤗")
